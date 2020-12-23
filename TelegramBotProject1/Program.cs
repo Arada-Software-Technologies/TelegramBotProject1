@@ -56,5 +56,26 @@ namespace TelegramBotProject1
             return id;
         }
 
+        // function returns the posititon score 
+
+        // if the user guesses 1234 and the generated number is 1342 the pos score will be only 1
+        // since only the number 1 is in the correct position in both cases
+
+        static private int PosScore(string UserGuess_Num)
+        {
+            int pos = 0;
+
+            if (Gen_num[0] == UserGuess_Num[0])
+                pos++;
+            if (Gen_num[1] == UserGuess_Num[1])
+                pos++;
+            if (Gen_num[2] == UserGuess_Num[2])
+                pos++;
+            if (Gen_num[3] == UserGuess_Num[3])
+                pos++;
+
+            return pos;
+        }
+
     }
 }
