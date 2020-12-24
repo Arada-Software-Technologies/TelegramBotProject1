@@ -13,39 +13,122 @@ namespace TelegramBotProject1
         static string Gen_num;
 
         static TelegramBotClient bot = new TelegramBotClient("1487222844:AAFs5T_Wl_xiLkvkxPMAQCXoTmD7caA2pjc");
+
+        //text for the main menu keyboard
+        static string btn_txt1 = "Start Playing!";
+        static string btn_txt2 = "Change In Game UserName";
+        static string btn_txt3 = "Highscore Board";
+        static string btn_txt4 = "Help";
+        static string btn_txt5 = "About";
+
+        //true if a game is being played false otherwise
+        static bool playing = false;
+
+        //message object that holds the massage id of the game so that it can be edited
+        static Message game_msg;
+
         static void Main(string[] args)
         {
             //Console.WriteLine("Hello World!");
-
+            
             bot.StartReceiving();
             bot.OnMessage += Bot_OnMessage;
+            
+            
+            
+            
 
             Console.ReadLine();
         }
 
         private static async void Bot_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
         {
-            string welcomeMessage1 = "<b>Welcome.</b>";
-            string welcomeMessage2 = "This is the @IDposGameBot. Use the buttons below to navigate through the bot. If you need help you can also use /help to get more info.";
-
             if (e.Message.Text == "/start")
             {
-                //bot.DeleteMessageAsync("@IDposGameBot", e.Message.MessageId);
-                Message message = await bot.SendTextMessageAsync(
-                chatId: e.Message.Chat, // or a chat id: 123456789
-                text: (welcomeMessage1 + welcomeMessage2),
+                // Defining the Keyboard buttons for the main menu
+                KeyboardButton[][] button = { new KeyboardButton[1], new KeyboardButton[2], new KeyboardButton[2] };                
+
+                button[0][0] = new KeyboardButton(btn_txt1);
+                button[1][0] = new KeyboardButton(btn_txt2);
+                button[1][1] = new KeyboardButton(btn_txt3);
+                button[2][0] = new KeyboardButton(btn_txt4);
+                button[2][1] = new KeyboardButton(btn_txt5);
+
+
+                //Defining the Keyboard that contains the buttons above
+                ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
+
+                //adjusts the size of the custom keyboard to what is only is needed
+                keyboard.ResizeKeyboard = true;
+
+                //deletes the '/start' text
+                await bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
+
+                //sends welcome message and also send the user the custom keyboard defined on line 45
+                await bot.SendTextMessageAsync(
+                chatId: e.Message.Chat,
+                text: "<b>Welcome</b> to the @IDposGameBot. \n\nYou can start using the buttons below to navigate through the bot. \n\nFor help use /help or press the button below ",
                 parseMode: ParseMode.Html,
                 disableNotification: true,
-                replyToMessageId: e.Message.MessageId,
-                replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton[][]
-                                                        {
-                                                            new [] { new InlineKeyboardButton() { Text = "btn 1"} }, // buttons in row 1
-                                                            new [] { new InlineKeyboardButton() { Text = "btn 2"} }, // buttons in row 2
-                                                            new [] { new InlineKeyboardButton() { Text = "btn 3"} }// buttons in row 3
-                                                        }
-                                                      )
+                replyMarkup: keyboard
                 );
             }
+            else if(e.Message.Text == btn_txt1)
+            {
+                //deletes btn_txt1 from the chat
+                await bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
+
+                // Defining the Keyboard buttons for the game
+                KeyboardButton[][] button = { new KeyboardButton[3], new KeyboardButton[3], new KeyboardButton[3], new KeyboardButton[3] };
+
+                button[0][0] = new KeyboardButton("1");
+                button[0][1] = new KeyboardButton("2");
+                button[0][2] = new KeyboardButton("3");
+                button[1][0] = new KeyboardButton("4");
+                button[1][1] = new KeyboardButton("5");
+                button[1][2] = new KeyboardButton("6");
+                button[2][0] = new KeyboardButton("7");
+                button[2][1] = new KeyboardButton("8");
+                button[2][2] = new KeyboardButton("9");
+                button[3][0] = new KeyboardButton("<--");
+                button[3][1] = new KeyboardButton("0");
+                button[3][2] = new KeyboardButton("Submit");
+
+
+                //Defining Keyboard that contains the buttons above
+                ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
+
+                //adjusts the size of the custom keyboard to what is only is needed
+                keyboard.ResizeKeyboard = true;
+
+                playing = true;
+                GenerateNumber();
+
+                await bot.SendTextMessageAsync(
+                chatId: e.Message.Chat,
+                text: "<b>Game Started!</b> \n\n Good Luck!!! ",
+                parseMode: ParseMode.Html,
+                disableNotification: true                
+                );
+
+
+                game_msg=await bot.SendTextMessageAsync(
+                chatId: e.Message.Chat,
+                text: "Number to Guess: <b>****</b> \n\n        ID  POS \n1. ",
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                replyMarkup: keyboard
+                );
+            }
+            else if (playing)
+            {
+                if(e.Message.Text == "1")
+                {
+                    
+                }
+            }
+            
+            
 
 
 
