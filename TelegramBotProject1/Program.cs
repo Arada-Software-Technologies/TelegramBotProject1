@@ -25,7 +25,9 @@ namespace TelegramBotProject1
         static bool playing = false;
 
         //message object that holds the massage id of the game so that it can be edited
-        static Message game_msg;
+        static Message game_msg ,welcome_msg;
+
+        static int previous_msgID;
 
         static void Main(string[] args)
         {
@@ -43,95 +45,160 @@ namespace TelegramBotProject1
 
         private static async void Bot_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
         {
-            if (e.Message.Text == "/start")
+            if (!playing)
             {
-                // Defining the Keyboard buttons for the main menu
-                KeyboardButton[][] button = { new KeyboardButton[1], new KeyboardButton[2], new KeyboardButton[2] };                
-
-                button[0][0] = new KeyboardButton(btn_txt1);
-                button[1][0] = new KeyboardButton(btn_txt2);
-                button[1][1] = new KeyboardButton(btn_txt3);
-                button[2][0] = new KeyboardButton(btn_txt4);
-                button[2][1] = new KeyboardButton(btn_txt5);
-
-
-                //Defining the Keyboard that contains the buttons above
-                ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
-
-                //adjusts the size of the custom keyboard to what is only is needed
-                keyboard.ResizeKeyboard = true;
-
-                //deletes the '/start' text
-                await bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
-
-                //sends welcome message and also send the user the custom keyboard defined on line 45
-                await bot.SendTextMessageAsync(
-                chatId: e.Message.Chat,
-                text: "<b>Welcome</b> to the @IDposGameBot. \n\nYou can start using the buttons below to navigate through the bot. \n\nFor help use /help or press the button below ",
-                parseMode: ParseMode.Html,
-                disableNotification: true,
-                replyMarkup: keyboard
-                );
-            }
-            else if(e.Message.Text == btn_txt1)
-            {
-                //deletes btn_txt1 from the chat
-                await bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
-
-                // Defining the Keyboard buttons for the game
-                KeyboardButton[][] button = { new KeyboardButton[3], new KeyboardButton[3], new KeyboardButton[3], new KeyboardButton[3] };
-
-                button[0][0] = new KeyboardButton("1");
-                button[0][1] = new KeyboardButton("2");
-                button[0][2] = new KeyboardButton("3");
-                button[1][0] = new KeyboardButton("4");
-                button[1][1] = new KeyboardButton("5");
-                button[1][2] = new KeyboardButton("6");
-                button[2][0] = new KeyboardButton("7");
-                button[2][1] = new KeyboardButton("8");
-                button[2][2] = new KeyboardButton("9");
-                button[3][0] = new KeyboardButton("<--");
-                button[3][1] = new KeyboardButton("0");
-                button[3][2] = new KeyboardButton("Submit");
-
-
-                //Defining Keyboard that contains the buttons above
-                ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
-
-                //adjusts the size of the custom keyboard to what is only is needed
-                keyboard.ResizeKeyboard = true;
-
-                playing = true;
-                GenerateNumber();
-
-                await bot.SendTextMessageAsync(
-                chatId: e.Message.Chat,
-                text: "<b>Game Started!</b> \n\n Good Luck!!! ",
-                parseMode: ParseMode.Html,
-                disableNotification: true                
-                );
-
-
-                game_msg=await bot.SendTextMessageAsync(
-                chatId: e.Message.Chat,
-                text: "Number to Guess: <b>****</b> \n\n        ID  POS \n1. ",
-                parseMode: ParseMode.Html,
-                disableNotification: true,
-                replyMarkup: keyboard
-                );
-            }
-            else if (playing)
+                if (e.Message.Text == "/start")
+                {
+                    Welcome(e);
+                }
+                else if (e.Message.Text == btn_txt1)
+                {
+                    StartGame(e);
+                }
+            }            
+            else
             {
                 if(e.Message.Text == "1")
                 {
                     
                 }
+                else if (e.Message.Text == "2")
+                {
+
+                }
+                else if (e.Message.Text == "3")
+                {
+
+                }
+                else if (e.Message.Text == "4")
+                {
+
+                }
+                else if (e.Message.Text == "5")
+                {
+
+                }
+                else if (e.Message.Text == "6")
+                {
+
+                }
+                else if (e.Message.Text == "7")
+                {
+
+                }
+                else if (e.Message.Text == "8")
+                {
+
+                }
+                else if (e.Message.Text == "9")
+                {
+
+                }
+                else if (e.Message.Text == "0")
+                {
+
+                }
+                else if (e.Message.Text == "Quit")
+                {
+                    //delets the message that was sent by the bot before
+                    await bot.DeleteMessageAsync(e.Message.Chat.Id, previous_msgID);
+                    playing = false;
+                    Welcome(e);
+                }
+                else if (e.Message.Text == "<--")
+                {
+
+                }
+                else
+                {
+                    //send notification to the user that they should use the keyboard and also delete the message they sent
+                }
+
             }
             
             
 
 
 
+        }
+
+        static async void StartGame(Telegram.Bot.Args.MessageEventArgs e)
+        {
+            //delets the message that was sent by the bot before
+            await bot.DeleteMessageAsync(e.Message.Chat.Id, previous_msgID);
+
+            //deletes btn_txt1 from the chat
+            await bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
+
+            // Defining the Keyboard buttons for the game
+            KeyboardButton[][] button = { new KeyboardButton[3], new KeyboardButton[3], new KeyboardButton[3], new KeyboardButton[3] };
+
+            button[0][0] = new KeyboardButton("1");
+            button[0][1] = new KeyboardButton("2");
+            button[0][2] = new KeyboardButton("3");
+            button[1][0] = new KeyboardButton("4");
+            button[1][1] = new KeyboardButton("5");
+            button[1][2] = new KeyboardButton("6");
+            button[2][0] = new KeyboardButton("7");
+            button[2][1] = new KeyboardButton("8");
+            button[2][2] = new KeyboardButton("9");
+            button[3][0] = new KeyboardButton("Quit");
+            button[3][1] = new KeyboardButton("0");
+            button[3][2] = new KeyboardButton("<--");
+
+
+            //Defining Keyboard that contains the buttons above
+            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
+
+            //adjusts the size of the custom keyboard to what is only is needed
+            keyboard.ResizeKeyboard = true;
+
+            playing = true;
+            GenerateNumber();    
+
+
+            game_msg = await bot.SendTextMessageAsync(
+            chatId: e.Message.Chat,
+            text: "<b>Game Started!</b> \n\n Good Luck!!!\n\nNumber to Guess: <b>****</b> \n\n        ID  POS \n1. ",
+            parseMode: ParseMode.Html,
+            disableNotification: true,
+            replyMarkup: keyboard
+            );
+
+            previous_msgID = game_msg.MessageId;
+        }
+
+        static async void Welcome(Telegram.Bot.Args.MessageEventArgs e)
+        {
+            // Defining the Keyboard buttons for the main menu
+            KeyboardButton[][] button = { new KeyboardButton[1], new KeyboardButton[2], new KeyboardButton[2] };
+
+            button[0][0] = new KeyboardButton(btn_txt1);
+            button[1][0] = new KeyboardButton(btn_txt2);
+            button[1][1] = new KeyboardButton(btn_txt3);
+            button[2][0] = new KeyboardButton(btn_txt4);
+            button[2][1] = new KeyboardButton(btn_txt5);
+
+
+            //Defining the Keyboard that contains the buttons above
+            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
+
+            //adjusts the size of the custom keyboard to what is only is needed
+            keyboard.ResizeKeyboard = true;
+
+            //deletes the '/start' text
+            await bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
+
+            //sends welcome message and also send the user the custom keyboard defined on line 45
+            welcome_msg = await bot.SendTextMessageAsync(
+            chatId: e.Message.Chat,
+            text: "<b>Welcome</b> to the @IDposGameBot. \n\nYou can start using the buttons below to navigate through the bot. \n\nFor help use /help or press the button below ",
+            parseMode: ParseMode.Html,
+            disableNotification: true,
+            replyMarkup: keyboard
+            );
+
+            previous_msgID = welcome_msg.MessageId;
         }
 
         static private void GenerateNumber()
