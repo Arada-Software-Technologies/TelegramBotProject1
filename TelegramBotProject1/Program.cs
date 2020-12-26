@@ -221,7 +221,7 @@ namespace TelegramBotProject1
 
                             Message Keyboard_msg = bot.SendTextMessageAsync(
                             chatId: e.Message.Chat,
-                            text: "Congratulations!!! \n\n You have guessed the number in " + (moves - 1).ToString() + " tries. Check the Highscore board to see if you havee made it in to the list. \n\n to go back to the main menu press the button below",
+                            text: "Congratulations!!! \n\nYou have guessed the number in " + (moves - 1).ToString() + " tries. Check the Highscore board to see if you havee made it in to the list. \n\nTo go back to the main menu press the button below",
                             parseMode: ParseMode.Html,
                             disableNotification: true,
                             replyMarkup: keyboard

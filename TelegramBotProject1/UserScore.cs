@@ -13,6 +13,7 @@ namespace TelegramBotProject1
         {
             //if the score qualifies in to the highscore table the value will be true otherwise false
             bool Qual_HS = false;
+            int x;
 
 
 
