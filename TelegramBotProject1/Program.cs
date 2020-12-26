@@ -115,7 +115,7 @@ namespace TelegramBotProject1
                     {
                         Message msg = bot.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
-                                text: "<b>Please</b> type '/start' to start the bot",
+                                text: "!!!!It seems the server has stopped or crashed!!!\n<b>Please</b> type '/start' to start the bot and the bot will reply when the bot is up and running",
                                 parseMode: ParseMode.Html,
                                 disableNotification: true
                                 ).Result;
