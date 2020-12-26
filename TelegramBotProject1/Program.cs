@@ -14,6 +14,9 @@ namespace TelegramBotProject1
         // *** it's a string so that it can store the numbers like 0123 ***
         static string Gen_num;
 
+        //creating userscore object
+        static UserScore us = new UserScore();
+
         static TelegramBotClient bot = new TelegramBotClient("1487222844:AAFs5T_Wl_xiLkvkxPMAQCXoTmD7caA2pjc");
 
         //text for the main menu keyboard
@@ -71,6 +74,18 @@ namespace TelegramBotProject1
                     if (e.Message.Text == btn_txt1)
                     {
                         StartGame(e);
+                        deleteErrorMsg(e);
+                    }
+                    else if (e.Message.Text == btn_txt3)
+                    {
+                        ShowHighscore(e);
+                        deleteErrorMsg(e);
+                    }
+                    else if (e.Message.Text == "Go Back To The Main Menu")
+                    {
+                        bot.DeleteMessageAsync(e.Message.Chat.Id, previous_msgID);
+                        bot.DeleteMessageAsync(e.Message.Chat.Id, markup_msgID);
+                        Welcome(e);
                         deleteErrorMsg(e);
                     }
                     else
@@ -208,7 +223,12 @@ namespace TelegramBotProject1
                         //this sends the congratulations message 
                         if (pos == 4)
                         {
-                            //game ends
+                            //game ends because user has won
+
+                            us.username = name;
+                            us.moves = moves - 1;
+                            //adds the users score to the database
+                            us.RegisterScore();
 
                             bot.DeleteMessageAsync(e.Message.Chat.Id, markup_msgID);
                             KeyboardButton button = new KeyboardButton("Go Back To The Main Menu");
@@ -272,7 +292,59 @@ namespace TelegramBotProject1
 
 
         }
-        
+
+        static void ShowHighscore(Telegram.Bot.Args.MessageEventArgs e)
+        {
+            // Defining the Keyboard buttons for the main menu
+            KeyboardButton button = new KeyboardButton("Go Back To The Main Menu");
+            
+
+
+            //Defining the Keyboard that contains the buttons above
+            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
+
+            //adjusts the size of the custom keyboard to what is only is needed
+            keyboard.ResizeKeyboard = true;
+
+            //deletes the 'highscoreboard message' text            
+            bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
+
+            Message Keyboard_msg = bot.SendTextMessageAsync(
+            chatId: e.Message.Chat,
+            text: "<b>Top Ten Players Listed Below</b>",
+            parseMode: ParseMode.Html,
+            disableNotification: true,
+            replyMarkup: keyboard
+            ).Result;
+
+            markup_msgID = Keyboard_msg.MessageId;
+
+            string msg = us.TopTen();
+            Message welcome_msg;
+            if (msg == "")
+            {
+                welcome_msg = bot.SendTextMessageAsync(
+                chatId: e.Message.Chat,
+                text: "*Seems no one has played the game yet",
+                parseMode: ParseMode.Html,
+                disableNotification: true
+                ).Result;
+            }
+            else
+            {
+                welcome_msg = bot.SendTextMessageAsync(
+                chatId: e.Message.Chat,
+                text: us.TopTen(),
+                parseMode: ParseMode.Html,
+                disableNotification: true
+                ).Result;
+            }
+            
+
+            previous_msgID = welcome_msg.MessageId;
+
+        }
+
         //delets error messages sent by the bot if there are any
         //if there arent the code wont execute
         static void deleteErrorMsg(Telegram.Bot.Args.MessageEventArgs e)
