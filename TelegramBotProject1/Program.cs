@@ -81,6 +81,11 @@ namespace TelegramBotProject1
                         ShowHighscore(e);
                         deleteErrorMsg(e);
                     }
+                    else if (e.Message.Text == btn_txt5)
+                    {
+                        ShowAbout(e);
+                        deleteErrorMsg(e);
+                    }
                     else if (e.Message.Text == "Go Back To The Main Menu")
                     {
                         bot.DeleteMessageAsync(e.Message.Chat.Id, previous_msgID);
@@ -293,12 +298,12 @@ namespace TelegramBotProject1
 
         }
 
-        static void ShowHighscore(Telegram.Bot.Args.MessageEventArgs e)
+        static void ShowAbout(Telegram.Bot.Args.MessageEventArgs e)
         {
-            // Defining the Keyboard buttons for the main menu
+            // Defining the Keyboard buttons 
             KeyboardButton button = new KeyboardButton("Go Back To The Main Menu");
-            
 
+            bot.DeleteMessageAsync(e.Message.Chat.Id, markup_msgID);
 
             //Defining the Keyboard that contains the buttons above
             ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
@@ -311,7 +316,46 @@ namespace TelegramBotProject1
 
             Message Keyboard_msg = bot.SendTextMessageAsync(
             chatId: e.Message.Chat,
-            text: "<b>Top Ten Players Listed Below</b>",
+            text: "<b>About</b>",
+            parseMode: ParseMode.Html,
+            disableNotification: true,
+            replyMarkup: keyboard
+            ).Result;
+
+            markup_msgID = Keyboard_msg.MessageId;
+
+            //about section
+            Message welcome_msg = welcome_msg = bot.EditMessageTextAsync(
+                    chatId: e.Message.Chat,
+                    messageId: previous_msgID,
+                    text: "Created by @Leunama\nCode can be found  here \n https://github.com/Arada-Software-Technologies/TelegramBotProject1",
+                    parseMode: ParseMode.Html
+                    ).Result;
+
+
+            previous_msgID = welcome_msg.MessageId;
+
+        }
+
+        static void ShowHighscore(Telegram.Bot.Args.MessageEventArgs e)
+        {
+            // Defining the Keyboard buttons 
+            KeyboardButton button = new KeyboardButton("Go Back To The Main Menu");
+
+            bot.DeleteMessageAsync(e.Message.Chat.Id, markup_msgID);
+
+            //Defining the Keyboard that contains the buttons above
+            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(button);
+
+            //adjusts the size of the custom keyboard to what is only is needed
+            keyboard.ResizeKeyboard = true;
+
+            //deletes the 'highscoreboard message' text            
+            bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
+
+            Message Keyboard_msg = bot.SendTextMessageAsync(
+            chatId: e.Message.Chat,
+            text: "<b>Top Ten Players Listed Above</b>",
             parseMode: ParseMode.Html,
             disableNotification: true,
             replyMarkup: keyboard
@@ -323,21 +367,22 @@ namespace TelegramBotProject1
             Message welcome_msg;
             if (msg == "")
             {
-                welcome_msg = bot.SendTextMessageAsync(
-                chatId: e.Message.Chat,
-                text: "*Seems no one has played the game yet",
-                parseMode: ParseMode.Html,
-                disableNotification: true
-                ).Result;
+                welcome_msg = bot.EditMessageTextAsync(
+                    chatId: e.Message.Chat,
+                    messageId: previous_msgID,
+                    text: "*Seems no one has played the game yet",
+                    parseMode: ParseMode.Html
+                    ).Result;                
             }
             else
             {
-                welcome_msg = bot.SendTextMessageAsync(
-                chatId: e.Message.Chat,
-                text: us.TopTen(),
-                parseMode: ParseMode.Html,
-                disableNotification: true
-                ).Result;
+                welcome_msg= bot.EditMessageTextAsync(
+                    chatId: e.Message.Chat,
+                    messageId: previous_msgID,
+                    text: us.TopTen(),
+                    parseMode: ParseMode.Html
+                    ).Result;
+                
             }
             
 
