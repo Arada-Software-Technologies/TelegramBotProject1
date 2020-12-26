@@ -23,12 +23,13 @@ namespace TelegramBotProject1
         static string btn_txt5 = "About";
 
         //true if a game is being played false otherwise
-        static bool playing = false;        
+        static bool playing = false;
 
-        
+        //holds the name of the user
+        static string name;
 
         //holds the id of the last send message by the bot either for deleting or editing the message 
-        static int previous_msgID, markup_msgID;
+        static int previous_msgID, markup_msgID, error_msgID;
 
         //holds the number of moves made by the user 
         static int moves = 1;
@@ -70,25 +71,40 @@ namespace TelegramBotProject1
                     if (e.Message.Text == btn_txt1)
                     {
                         StartGame(e);
+                        deleteErrorMsg(e);
                     }
                     else
-                    {
+                    {                       
+                        Message msg = bot.SendTextMessageAsync(
+                                chatId: e.Message.Chat,
+                                text: "<b>Please</b> use the keyboard provided below!!!",
+                                parseMode: ParseMode.Html,
+                                disableNotification: true
+                                ).Result;
+                        error_msgID = msg.MessageId;
                         //propmpt the user to use the keyboard
-                        //delets the users text
+                        //delets the users text                        
                         bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("here");
                     if (e.Message.Text == "/start")
                     {
-                        Console.WriteLine("here");
+                        name = e.Message.From.FirstName + " " + e.Message.From.LastName;
+                        deleteErrorMsg(e);
                         Welcome(e);
                         start = true;
                     }
                     else
                     {
+                        Message msg = bot.SendTextMessageAsync(
+                                chatId: e.Message.Chat,
+                                text: "<b>Please</b> type '/start' to start the bot",
+                                parseMode: ParseMode.Html,
+                                disableNotification: true
+                                ).Result;
+                        error_msgID = msg.MessageId;
                         //propmpt the user to type /start
                         //delets the users text
                         bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
@@ -99,54 +115,67 @@ namespace TelegramBotProject1
             {
                 if(e.Message.Text == "1")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "2")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "3")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "4")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "5")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "6")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "7")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "8")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "9")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "0")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if (e.Message.Text == "Quit" || e.Message.Text == "Go Back To The Main Menu")
                 {
+                    deleteErrorMsg(e);
                     refresh(e);
                 }
                 else if (e.Message.Text == "<--")
                 {
+                    deleteErrorMsg(e);
                     Guess(e);
                 }
                 else if(e.Message.Text == "Submit")
                 {
+                    deleteErrorMsg(e);
                     if (No_ofDigits == 4)
                     {
 
@@ -179,6 +208,8 @@ namespace TelegramBotProject1
                         //this sends the congratulations message 
                         if (pos == 4)
                         {
+                            //game ends
+
                             bot.DeleteMessageAsync(e.Message.Chat.Id, markup_msgID);
                             KeyboardButton button = new KeyboardButton("Go Back To The Main Menu");
                             
@@ -190,7 +221,7 @@ namespace TelegramBotProject1
 
                             Message Keyboard_msg = bot.SendTextMessageAsync(
                             chatId: e.Message.Chat,
-                            text: "Congratulations!!! \n\n You have guessed the number in " + (moves - 1).ToString() + " tries. \n\n to go back to the main menu press the button below",
+                            text: "Congratulations!!! \n\n You have guessed the number in " + (moves - 1).ToString() + " tries. Check the Highscore board to see if you havee made it in to the list. \n\n to go back to the main menu press the button below",
                             parseMode: ParseMode.Html,
                             disableNotification: true,
                             replyMarkup: keyboard
@@ -202,6 +233,18 @@ namespace TelegramBotProject1
                     }
                     else
                     {
+                        //game continues
+
+                        //delets the users text
+                        bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
+
+                        Message msg = bot.SendTextMessageAsync(
+                            chatId: e.Message.Chat,
+                            text: "<b>Please</b> enter 4 digits before submitting\n you have currently entered only " + No_ofDigits.ToString() + " digits.",
+                            parseMode: ParseMode.Html,
+                            disableNotification: true                          
+                            ).Result;
+                        error_msgID = msg.MessageId;
                         //prompt the user to enter four digits
                     }
                     
@@ -210,6 +253,14 @@ namespace TelegramBotProject1
                 {
                     //delets the users text
                     bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId);
+
+                    Message msg = bot.SendTextMessageAsync(
+                            chatId: e.Message.Chat,
+                            text: "<b>Please</b> use the keyboard provided below!!! \n there is no need to type to play this game.",
+                            parseMode: ParseMode.Html,
+                            disableNotification: true
+                            ).Result;
+                    error_msgID = msg.MessageId;
 
                     //send notification to the user that they should use the keyboard and also delete the message they sent
                 }
@@ -220,6 +271,21 @@ namespace TelegramBotProject1
 
 
 
+        }
+        
+        //delets error messages sent by the bot if there are any
+        //if there arent the code wont execute
+        static void deleteErrorMsg(Telegram.Bot.Args.MessageEventArgs e)
+        {
+            //catches message not found exception
+            try
+            {
+                bot.DeleteMessageAsync(e.Message.Chat.Id, error_msgID);
+            }
+            catch(Exception)
+            {
+
+            }            
         }
 
         //removes all the data from a previous game so that a new one can be started 
@@ -336,11 +402,29 @@ namespace TelegramBotProject1
                     }
                     else
                     {
+                        
+
+                        Message msg = bot.SendTextMessageAsync(
+                                chatId: e.Message.Chat,
+                                text: "<b>Please</b> dont try to add the same number twice!!!!",
+                                parseMode: ParseMode.Html,
+                                disableNotification: true
+                                ).Result;
+                        error_msgID = msg.MessageId;
+
+                        //send notification to the user that they should use the keyboard and also delete the message they sent
                         //notify the user that they cant add the same number twice!!!!
                     }
                 }
                 else
                 {
+                    Message msg = bot.SendTextMessageAsync(
+                                chatId: e.Message.Chat,
+                                text: "<b>Please</b> dont try to enter more than 4 digits",
+                                parseMode: ParseMode.Html,
+                                disableNotification: true
+                                ).Result;
+                    error_msgID = msg.MessageId;
                     //notify the user that no more than 4 digits can be entered 
                 }
             }
@@ -429,7 +513,7 @@ namespace TelegramBotProject1
 
             Message Keyboard_msg = bot.SendTextMessageAsync(
             chatId: e.Message.Chat,
-            text: "<b>Hello!</b>",
+            text: "<b>Hello!</b> " + name + ",",
             parseMode: ParseMode.Html,
             disableNotification: true,
             replyMarkup: keyboard
