@@ -13,29 +13,16 @@ namespace TelegramBotProject1
         
         public void RegisterScore()
         {
-            /*using (SqlConnection conn = new SqlConnection("Server= localhost; Database= EdirManagement_system; Integrated Security=True;"))
+            using (SqlConnection conn = new SqlConnection("Server= localhost; Database= IDPOS_Database; Integrated Security=True;"))
             {
                 conn.Open();
-                SqlCommand cmd = new SqlCommand("spMember", conn);
+                SqlCommand cmd = new SqlCommand("Record_score", conn);
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 // cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@userid", userid);
-                cmd.Parameters.AddWithValue("@FirstName", Fname);
-                cmd.Parameters.AddWithValue("@LastName", Lname);
-                cmd.Parameters.AddWithValue("@Phone", phoneNum);
-                cmd.Parameters.AddWithValue("@Address", houseNo);
-                cmd.Parameters.AddWithValue("@Email", email);
-                cmd.Parameters.AddWithValue("@Gender", gender);
+                cmd.Parameters.AddWithValue("@username", username);
+                cmd.Parameters.AddWithValue("@Moves", moves);                
                 cmd.ExecuteNonQuery();
-                MessageBox.Show("Data inserted Succesfully");
-
-            }*/
-
-
-
-
-
-
+            }
         }
     }
 }
